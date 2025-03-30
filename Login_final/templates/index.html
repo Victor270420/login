@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <title>Login</title>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <form id="loginForm">
+            <input type="text" name="username" placeholder="Usuário" required>
+            <input type="password" name="password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+        <div id="response"></div>
+        <h3>Usuários Cadastrados:</h3>
+        <ul id="userList">
+            {% for usuario in usuarios %}
+                <li>Usuário: {{ usuario.username }}, Senha: {{ usuario.password }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <script>
+        document.getElementById('loginForm').onsubmit = async function(event) {
+            event.preventDefault();
+            const formData = new FormData(this);
+            const response = await fetch('/login', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            document.getElementById('response').innerHTML = `Usuário: ${data.username}, Senha: ${data.password}`;
+            
+            // Atualiza a lista de usuários
+            const userList = document.getElementById('userList');
+            userList.innerHTML = '';
+            data.usuarios.forEach(usuario => {
+                const li = document.createElement('li');
+                li.textContent = `Usuário: ${usuario.username}, Senha: ${usuario.password}`;
+                userList.appendChild(li);
+            });
+        };
+    </script>
+    
+</body>
+</html>
+
